@@ -26,16 +26,18 @@ Message.prototype.translate = async function(text, args, options = {}) {
 
     return texttoreturn;
 };
+
 Message.prototype.getMember = function(args = {}) {
     
     return this.mentions.members.first() || this.guild.members.cache.get(args[0]) || this.guild.members.cache.filter(m => m.user.tag.toLowerCase().includes(args[0].toLowerCase()) || m.displayName.toLowerCase().includes(args[0].toLowerCase()) || m.user.username.toLowerCase().includes(args[0].toLowerCase())).first()
     
 };
+
 Message.prototype.error = async function(text, args, options = {}) {
     
     if (text && !lang.translations[text]) return throw new Error(`Unknown text ID "${text}"`);
 
-    else return throw new Error(`Aucun texte indiquer`);
+    else return throw new Error("Aucun texte indiquer !");
 
     const langbd = await guild.findOne({
         serverID: this.guild.id,
@@ -63,7 +65,8 @@ Message.prototype.errorMessage = async function(text, args, options = {}) {
         
         if (langbd)  target = langbd.content;
   
-        translate(text, { to: target }).then(res => {
+        translate(text, { to: target }).then((res) => {
+
             let finaltxt = `${res.text}`
                 .replace('<@ ', '<@')
                 .replace('<# ', '<@')
@@ -209,8 +212,7 @@ Message.prototype.succesMessage = async function(text, args, options = {}) {
 
 
             this.channel.send(embed1).then((m) => {
-                if (!this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES")) return;
-                if (!this.channel.permissionsFor(this.guild.me).has("ADD_REACTIONS")) return;
+                if (!this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES") || !this.channel.permissionsFor(this.guild.me).has("ADD_REACTIONS")) return;
 
                 m.react("<:delete:830790543659368448>")
                 const filtro = (reaction, user) => {
@@ -231,31 +233,33 @@ Message.prototype.succesMessage = async function(text, args, options = {}) {
                     }
                 });
             });
+
         }).catch(error => {
 
+console.log(error);
 
         });
 
-
-
-    } else {
-        throw new Error(`Aucun texte indiqu `)
-        return;
-    }
+    } else return throw new Error(`Aucun texte indiqu `);
 
 };
 Message.prototype.mainMessage = async function(text, args, options = {}) {
     if (text) {
+
         const langbd = await guild.findOne({
             serverID: this.guild.id,
             reason: 'lang',
-        })
-        let target;
-        if (langbd) {
-            target = langbd.content;
-        } else  target = 'fr';
+        });
 
-        translate(text, { to: target }).then(res => {
+        let target = "fr";
+
+        if (langbd) target = langbd.content;
+
+        translate(text, { 
+
+to: target 
+
+}).then(res => {
             let finaltxt = `${res.text}`
                 .replace('<@ ', '<@')
                 .replace('<# ', '<@')
@@ -294,15 +298,13 @@ Message.prototype.mainMessage = async function(text, args, options = {}) {
 
         }).catch(error => {
 
+console.log(error);
 
         });
 
 
 
-    } else {
-        throw new Error(`Aucun texte indiqu `)
-        return;
-    }
+    } else return throw new Error(`Aucun texte indiqu `)
 
 };
 
@@ -312,11 +314,9 @@ Message.prototype.sendT = async function(text, args, options = {}) {
             serverID: this.guild.id,
             reason: 'lang',
         })
-        let target;
-        if (langbd) {
-            target = langbd.content;
-        } else  target = 'en';
-
+        let target = "fr";
+        if (langbd) target = langbd.content;
+        
         translate(text, { to: target }).then(res => {
             let finaltxt = `${res.text}`
                 .replace('<@ ', '<@')
